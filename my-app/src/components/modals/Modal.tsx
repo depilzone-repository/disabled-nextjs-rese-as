@@ -45,12 +45,12 @@ const Modal: React.FC<ModalProps> = ({ message, show, onClose }) => {
             <div className="flex justify-center gap-8 ">
             
               <a href="https://www.apple.com/app-store/" target="_blank" rel="noopener noreferrer" className="text-black text-4xl">
-              <FaGooglePlay />
+              <FaAppStore />
               </a>
 
            
               <a href="https://play.google.com/store" target="_blank" rel="noopener noreferrer" className="text-black text-4xl">
-              <FaAppStore />
+              <FaGooglePlay />
               </a>
             </div>
           </div>
