@@ -6,7 +6,5 @@ export interface IFormReview {
 }
 
 export interface IFormReviewProps {
-    name:string;
-    calification: string ;
-    description:string;
+    citaId: string;
 }

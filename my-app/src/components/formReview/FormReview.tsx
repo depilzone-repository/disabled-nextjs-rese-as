@@ -3,7 +3,7 @@ import { useState } from 'react';
 import { IFormReview } from './types';
 import Modal from '../modals/Modal';
 
-const ReviewForm = () => {
+const ReviewForm = ({citaId}:{citaId:string}) => {
   const [formData, setFormData] = useState<IFormReview>({
     name: '',
     calification: '0', 
@@ -35,7 +35,11 @@ const ReviewForm = () => {
       setError('Por favor, completa todos los campos.');
       return;
     }
-
+    const reviewData = {
+      citaId, 
+      ...formData
+    };
+    console.log('Datos de la reseña:', reviewData);
 
     setIsModalVisible(true);
     setError('');

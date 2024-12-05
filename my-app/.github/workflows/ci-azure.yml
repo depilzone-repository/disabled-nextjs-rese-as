@@ -1,0 +1,47 @@
+name: CI/CD Workflow
+
+on:
+  push:
+    branches:
+      - main  # Cada vez que haces push a la rama `main`
+  pull_request:
+    branches:
+      - main  # También al abrir un pull request hacia `main`
+
+jobs:
+  build-and-test:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: 16  # Cambia según tu versión
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Run tests
+        run: npm test  # Asegúrate de que tienes un script `test` en tu package.json
+
+      - name: Build project
+        run: npm run build  # Cambia según cómo compiles tu proyecto
+
+  deploy-to-azure:
+    runs-on: ubuntu-latest
+    needs: build-and-test  # Este trabajo depende de que las pruebas se completen
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v3
+
+      - name: Deploy to Azure
+        env:
+          AZURE_WEBAPP_NAME: ${{ secrets.AZURE_WEBAPP_NAME }}  # Nombre de la app
+          AZURE_WEBAPP_PUBLISH_PROFILE: ${{ secrets.AZURE_WEBAPP_PUBLISH_PROFILE }}
+        run: |
+          echo "Deploying to Azure..."
+          echo $AZURE_WEBAPP_PUBLISH_PROFILE > azure-profile.publish
+          az webapp deploy --name $AZURE_WEBAPP_NAME --src-path .
