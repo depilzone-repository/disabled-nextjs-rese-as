@@ -1,23 +1,25 @@
-# Usa una imagen oficial de Node.js como base
-FROM node:18-alpine
-
-# Establece el directorio de trabajo dentro del contenedor
+# Etapa 1: Construcción
+FROM node:18-alpine AS builder
 WORKDIR /app
 
-# Copia los archivos de tu proyecto al contenedor
+# Instalar dependencias
 COPY package.json package-lock.json ./
+RUN npm install --frozen-lockfile
 
-# Instala las dependencias
-RUN npm install
-
-# Copia el resto de los archivos de tu proyecto
+# Copiar el código fuente y construir la aplicación
 COPY . .
+RUN npm run build || (echo "Build failed" && exit 1)
 
-# Construye la aplicación
-RUN npm run build
+# Etapa 2: Producción
+FROM node:18-alpine
+WORKDIR /app
 
-# Expone el puerto en el que Next.js corre (por defecto 3000)
+# Copiar archivos necesarios desde la etapa de construcción
+COPY --from=builder /app/.next ./.next
+COPY --from=builder /app/package.json ./
+COPY --from=builder /app/public ./public
+COPY --from=builder /app/node_modules ./node_modules
+
+# Exponer el puerto y ejecutar la aplicación
 EXPOSE 3000
-
-# Comando para iniciar la aplicación
-CMD ["npm", "start"]
+CMD ["yarn", "start"]
